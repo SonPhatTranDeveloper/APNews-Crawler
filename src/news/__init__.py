@@ -2,7 +2,7 @@ import os
 import requests
 from typing import List
 from dotenv import load_dotenv
-from model import InitialNews
+from src.model import InitialNews
 
 
 def get_headlines_by_source(api_key: str, source_id: str) -> List[InitialNews]:

@@ -5,7 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 
-from model import CrawledNews, InitialNews
+from src.model import CrawledNews, InitialNews
 
 
 def crawl_ap_article(news: InitialNews) -> CrawledNews:
