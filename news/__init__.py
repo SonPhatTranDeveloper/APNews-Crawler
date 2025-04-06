@@ -1,10 +1,11 @@
 import os
 import requests
-from typing import List, Dict
+from typing import List
 from dotenv import load_dotenv
+from model import InitialNews
 
 
-def get_headlines_by_source(api_key: str, source_id: str) -> List[Dict]:
+def get_headlines_by_source(api_key: str, source_id: str) -> List[InitialNews]:
     """Get the top headline from a particular source
 
     Args:
@@ -32,11 +33,14 @@ def get_headlines_by_source(api_key: str, source_id: str) -> List[Dict]:
 
         results = []
         for article in articles:
-            results.append({
-                'author': article.get('author'),
-                'title': article.get('title'),
-                'url': article.get('url')
-            })
+
+            results.append(
+                InitialNews(
+                    author=article.get('author'),
+                    title=article.get('title'),
+                    url=article.get('url')
+                )
+            )
 
         return results
     else:
