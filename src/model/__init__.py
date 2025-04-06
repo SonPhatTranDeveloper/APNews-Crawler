@@ -18,6 +18,7 @@ class CrawledNews:
 @dataclass
 class WordItem:
     word: str
+    base: str
     translation: str
     type: str
     usage: str

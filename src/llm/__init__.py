@@ -1,5 +1,4 @@
 import json
-import pprint
 import openai
 from src.model import ArticleAnalysis, WordItem, CrawledNews
 
@@ -48,11 +47,15 @@ def analyze_article_content(api_key: str, crawled_news: CrawledNews) -> ArticleA
                 },
                 "words": {
                     "type": "array",
-                    "description": "At least 10 words/phrases in the shortened version that are most notable, interesting, most-frequently used, or challenging",
+                    "description": "At least 10 words/phrases in the shortened version that are most notable, interesting, most-frequently used, or challenging. Do not include any private names/information. ",
                     "items": {
                         "type": "object",
                         "properties": {
                             "word": {"type": "string"},
+                            "base": {
+                                "type": "string",
+                                "description": "Base form of the word (singular, etc...)"
+                            },
                             "translation": {
                                 "type": "string",
                                 "description": "Translation of the word in Vietnamese",
@@ -85,7 +88,7 @@ def analyze_article_content(api_key: str, crawled_news: CrawledNews) -> ArticleA
                                 "maxItems": 3
                             }
                         },
-                        "required": ["word", "translation", "usage", "example"]
+                        "required": ["word", "base", "translation", "type", "usage", "example"]
                     }
                 }
             },
