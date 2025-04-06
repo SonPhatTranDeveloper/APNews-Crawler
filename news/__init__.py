@@ -14,17 +14,22 @@ def get_headlines_by_source(api_key: str, source_id: str) -> List[Dict]:
     Returns:
         _type_: A list of dictionary containing the news
     """
+    # Define URL and parameters
     url = "https://newsapi.org/v2/top-headlines"
     params = {
         'sources': source_id,
         'apiKey': api_key
     }
 
+    # Get the response
     response = requests.get(url, params=params)
 
+    # If successful, parse the response
+    # Else display and error and return an empty array
     if response.status_code == 200:
         data = response.json()
         articles = data.get('articles', [])
+
         results = []
         for article in articles:
             results.append({
@@ -32,6 +37,7 @@ def get_headlines_by_source(api_key: str, source_id: str) -> List[Dict]:
                 'title': article.get('title'),
                 'url': article.get('url')
             })
+
         return results
     else:
         print(f"Failed to fetch news: {response.status_code} - {response.text}")
