@@ -1,7 +1,10 @@
 import json
+
 import requests
 from google.auth.transport.requests import Request
 from google.oauth2 import service_account
+
+from constants import FIREBASE_PROJECT_ID
 
 
 def get_firestore_access_token(service_account_path: str) -> str:
@@ -17,7 +20,7 @@ def insert_document_firestore_rest(
     collection: str,
     document_id: str,
     document_data: dict,
-    project_id: str = "english-news-article",
+    project_id: str = FIREBASE_PROJECT_ID,
 ) -> str:
     """Inserts a document with a specified ID into Firestore via the REST API.
 

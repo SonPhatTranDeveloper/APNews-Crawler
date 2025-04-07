@@ -3,8 +3,10 @@ import os
 from dotenv import load_dotenv
 from tqdm import tqdm
 
+from constants import FIREBASE_COLLECTION, NEWS_SOURCE
 from src.crawler import crawl_ap_article
-from src.firebase import insert_document_firestore_rest, get_firestore_access_token
+from src.firebase import (get_firestore_access_token,
+                          insert_document_firestore_rest)
 from src.llm import analyze_article_content
 from src.news import get_headlines_by_source
 from src.utils import url_to_document_id
@@ -35,7 +37,7 @@ def process_article(article, scraper_key, openai_key, access_token):
     # Insert document
     insert_document_firestore_rest(
         access_token=access_token,
-        collection="articles",
+        collection=FIREBASE_COLLECTION,
         document_id=encoded_url,
         document_data=analyzed,
     )
@@ -48,7 +50,7 @@ def main():
     access_token = get_firestore_access_token(keys["service_account_path"])
     print("Firebase access token obtained.")
 
-    articles = get_headlines_by_source("associated-press", keys["news_api_key"])
+    articles = get_headlines_by_source(NEWS_SOURCE, keys["news_api_key"])
 
     for article in tqdm(articles, desc="Processing articles"):
         try:

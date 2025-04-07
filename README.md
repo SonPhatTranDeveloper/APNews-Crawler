@@ -148,6 +148,16 @@ export GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/service-account.json
 
 You can use a `.env` file and `python-dotenv` to load them automatically in development.
 
+You should also add your custom configuration in `constants.py` file
+
+```python
+FIREBASE_PROJECT_ID = "english-news-article"
+FIREBASE_COLLECTION = "articles"
+OPENAI_MODEL = "gpt-4o-mini"
+OPENAI_TEMP = 0.7
+NEWS_SOURCE = "associated-press"
+```
+
 Build APNews-Crawler from the source and install dependencies:
 
 1. **Clone the repository:**

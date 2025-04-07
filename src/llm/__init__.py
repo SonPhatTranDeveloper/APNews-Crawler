@@ -3,6 +3,7 @@ from typing import Dict
 
 import openai
 
+from constants import OPENAI_MODEL, OPENAI_TEMP
 from src.model import CrawledNews
 
 
@@ -146,11 +147,11 @@ def analyze_article_content(
 
     # Get the response from GPT-4-turbo
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model=OPENAI_MODEL,
         messages=messages,
         functions=[function_schema],
         function_call={"name": "analyze_article"},
-        temperature=0.7,
+        temperature=OPENAI_TEMP,
     )
 
     # Parse the arguments to JSON data and return the dictionary
