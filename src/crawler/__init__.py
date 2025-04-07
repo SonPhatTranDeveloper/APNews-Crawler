@@ -26,19 +26,17 @@ def crawl_ap_article(news: InitialNews) -> CrawledNews:
     driver.quit()
 
     return CrawledNews(
-        article=InitialNews(
-            author=news.author,
-            title=news.title,
-            url=news.url
-        ),
-        content=content
+        article=InitialNews(author=news.author, title=news.title, url=news.url),
+        content=content,
     )
 
 
 if __name__ == "__main__":
-    from news import get_headlines_by_source
-    from dotenv import load_dotenv
     import os
+
+    from dotenv import load_dotenv
+
+    from news import get_headlines_by_source
 
     load_dotenv()
     api_key = os.getenv("NEWS_API_KEY")

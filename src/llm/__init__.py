@@ -1,26 +1,20 @@
 import json
+from typing import Dict
+
 import openai
-from src.model import ArticleAnalysis, WordItem, CrawledNews
+
+from src.model import CrawledNews
 
 
-def parse_analysis(crawled_news: CrawledNews, json_data: dict) -> ArticleAnalysis:
-    words = [WordItem(**w) for w in json_data['words']]
-    return ArticleAnalysis(
-        article=crawled_news,
-        shortened=json_data['shortened'],
-        sentences=[tuple(s) for s in json_data['sentences']],
-        category=json_data['category'],
-        words=words
-    )
-
-
-def analyze_article_content(api_key: str, crawled_news: CrawledNews) -> ArticleAnalysis:
+def analyze_article_content(api_key: str, crawled_news: CrawledNews) -> Dict:
     """
     Analyze English news article content using ChatGPT API (function calling).
     Returns an ArticleAnalysis dataclass instance.
     """
+    # Create the client
     client = openai.OpenAI(api_key=api_key)
 
+    # Create schema for function arguments
     function_schema = {
         "name": "analyze_article",
         "description": "Analyze English news article content",
@@ -29,7 +23,7 @@ def analyze_article_content(api_key: str, crawled_news: CrawledNews) -> ArticleA
             "properties": {
                 "shortened": {
                     "type": "string",
-                    "description": "A concise English summary between 500 and 800 words."
+                    "description": "A concise English summary between 500 and 800 words.",
                 },
                 "sentences": {
                     "type": "array",
@@ -38,23 +32,31 @@ def analyze_article_content(api_key: str, crawled_news: CrawledNews) -> ArticleA
                         "type": "array",
                         "items": {"type": "string"},
                         "minItems": 2,
-                        "maxItems": 2
-                    }
+                        "maxItems": 2,
+                    },
                 },
                 "category": {
                     "type": "string",
-                    "enum": ["business", "entertainment", "general", "health", "science", "sports", "technology"]
+                    "enum": [
+                        "business",
+                        "entertainment",
+                        "general",
+                        "health",
+                        "science",
+                        "sports",
+                        "technology",
+                    ],
                 },
                 "words": {
                     "type": "array",
-                    "description": "At least 10 words/phrases in the shortened version that are most notable, interesting, most-frequently used, or challenging. Do not include any private names/information. ",
+                    "description": "Words/Phrases in the shortened version that are most notable, interesting, most-frequently used, or challenging. Do not include any private names/information. Eliminate any empty word from the array",
                     "items": {
                         "type": "object",
                         "properties": {
                             "word": {"type": "string"},
                             "base": {
                                 "type": "string",
-                                "description": "Base form of the word (singular, etc...)"
+                                "description": "Base form of the word (singular, etc...)",
                             },
                             "translation": {
                                 "type": "string",
@@ -73,8 +75,8 @@ def analyze_article_content(api_key: str, crawled_news: CrawledNews) -> ArticleA
                                     "thán từ",
                                     "đại từ",
                                     "mạo từ",
-                                    "cụm động từ"
-                                ]
+                                    "cụm động từ",
+                                ],
                             },
                             "usage": {
                                 "type": "string",
@@ -85,38 +87,45 @@ def analyze_article_content(api_key: str, crawled_news: CrawledNews) -> ArticleA
                                 "items": {"type": "string"},
                                 "description": "Two example sentences in English",
                                 "minItems": 3,
-                                "maxItems": 3
-                            }
+                                "maxItems": 3,
+                            },
                         },
-                        "required": ["word", "base", "translation", "type", "usage", "example"]
-                    }
-                }
+                        "required": [
+                            "word",
+                            "base",
+                            "translation",
+                            "type",
+                            "usage",
+                            "example",
+                        ],
+                    },
+                    "minItems": 10,
+                    "maxItems": 15,
+                },
             },
-            "required": ["shortened", "sentences", "category", "words"]
-        }
+            "required": ["shortened", "sentences", "category", "words"],
+        },
     }
 
+    # Create the message for chat completion
     messages = [
         {
             "role": "system",
-            "content": "You analyze English news articles and return structured JSON with summary, translations, vocabulary, and category."
+            "content": "You analyze English news articles and return structured JSON with summary, translations, vocabulary, and category.",
         },
-        {
-            "role": "user",
-            "content": f"Analyze this article:\n\n{crawled_news.content}"
-        }
+        {"role": "user", "content": f"Analyze this article:\n\n{crawled_news.content}"},
     ]
 
+    # Get the response from GPT-4-turbo
     response = client.chat.completions.create(
         model="gpt-4-turbo",
         messages=messages,
         functions=[function_schema],
         function_call={"name": "analyze_article"},
-        temperature=0.7
+        temperature=0.7,
     )
 
+    # Parse the arguments to JSON data and return the dictionary
     function_args = response.choices[0].message.function_call.arguments
     json_data = json.loads(function_args)
-
-    return parse_analysis(crawled_news, json_data)
-
+    return json_data

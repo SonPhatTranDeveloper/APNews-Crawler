@@ -11,3 +11,4 @@ wheels/
 
 # Environment variable
 .env
+accounts
