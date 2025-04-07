@@ -17,22 +17,40 @@ def analyze_article_content(api_key: str, crawled_news: CrawledNews) -> Dict:
     # Create schema for function arguments
     function_schema = {
         "name": "analyze_article",
-        "description": "Analyze English news article content",
+        "description": "Analyze English news article content. Make sure you escape things properly so that return JSON arguments is valid.",
         "parameters": {
             "type": "object",
             "properties": {
                 "shortened": {
                     "type": "string",
-                    "description": "A concise English summary between 500 and 800 words.",
+                    "description": (
+                        "A concise English summary between 500 and 800 words.\n\n"
+                        "Rewrite the article in a more engaging, concise, and human-readable style. "
+                        "Avoid generic academic phrasing like 'The article discusses...' or 'It highlights...'. "
+                        "Instead, get straight to the point, use active voice, and bring out the key points clearly, "
+                        "as if you're explaining it to a curious friend or writing for a newsletter.\n\n"
+                        "Avoid:\n"
+                        "- Passive voice\n"
+                        "- Overused phrases like 'The article states', 'It concludes'\n"
+                        "- Dense paragraph summaries\n\n"
+                    ),
                 },
                 "sentences": {
                     "type": "array",
-                    "description": "Each item contains two sentences: one english and one translated Vietnamese. Must cover all the sentences in the shortened version",
+                    "description": "Each item is an object with the English sentence and its Vietnamese translation. Must cover all the sentences in the shortened version. Do not include any weird symbols or emojis.",
                     "items": {
-                        "type": "array",
-                        "items": {"type": "string"},
-                        "minItems": 2,
-                        "maxItems": 2,
+                        "type": "object",
+                        "properties": {
+                            "original_sentence": {
+                                "type": "string",
+                                "description": "Sentence in English",
+                            },
+                            "translated_sentence": {
+                                "type": "string",
+                                "description": "Sentence translated to Vietnamese",
+                            },
+                        },
+                        "required": ["original_sentence", "translated_sentence"],
                     },
                 },
                 "category": {
@@ -49,7 +67,7 @@ def analyze_article_content(api_key: str, crawled_news: CrawledNews) -> Dict:
                 },
                 "words": {
                     "type": "array",
-                    "description": "Words/Phrases in the shortened version that are most notable, interesting, most-frequently used, or challenging. Do not include any private names/information. Eliminate any empty word from the array",
+                    "description": "At least 10 Words/Phrases in the shortened version that are most notable, interesting, most-frequently used, or challenging. Do not include any private names/information. Eliminate any empty word from the array",
                     "items": {
                         "type": "object",
                         "properties": {
@@ -98,9 +116,9 @@ def analyze_article_content(api_key: str, crawled_news: CrawledNews) -> Dict:
                             "usage",
                             "example",
                         ],
+                        "minItems": 10,
+                        "maxItems": 15,
                     },
-                    "minItems": 10,
-                    "maxItems": 15,
                 },
             },
             "required": ["shortened", "sentences", "category", "words"],
@@ -128,4 +146,9 @@ def analyze_article_content(api_key: str, crawled_news: CrawledNews) -> Dict:
     # Parse the arguments to JSON data and return the dictionary
     function_args = response.choices[0].message.function_call.arguments
     json_data = json.loads(function_args)
+
+    # Add title
+    json_data["url"] = crawled_news.article.url
+    json_data["title"] = crawled_news.article.title
+    json_data["author"] = crawled_news.article.author
     return json_data

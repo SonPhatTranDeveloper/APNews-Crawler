@@ -1,33 +1,32 @@
+import os
 import pprint
-import time
 
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
+from dotenv import load_dotenv
 
 from src.model import CrawledNews, InitialNews
+from src.news import get_headlines_by_source
+
+from src.model import CrawledNews, InitialNews
+import requests
+
+from bs4 import BeautifulSoup
 
 
 def crawl_ap_article(news: InitialNews) -> CrawledNews:
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--no-sandbox")
+    # Call API
+    payload = {"api_key": "57d662980d58e442b7d23ffc2dee710c", "url": news.url}
+    r = requests.get("https://api.scraperapi.com/", params=payload)
 
-    driver = webdriver.Chrome(options=chrome_options)
-    driver.set_page_load_timeout(400)
-    driver.get(news.url)
-    time.sleep(2)
+    # Get the text and create soup
+    html = r.text
 
-    paragraphs = driver.find_elements(By.CSS_SELECTOR, "div.RichTextBody p")
-    raw_text = [p.text.strip() for p in paragraphs if len(p.text.strip()) > 5]
-    content = " ".join(raw_text)
-
-    driver.quit()
+    # Get a specific element
+    soup = BeautifulSoup(html, "html.parser")
+    div = soup.find("div", class_="RichTextBody")
 
     return CrawledNews(
         article=InitialNews(author=news.author, title=news.title, url=news.url),
-        content=content,
+        content=div.get_text(),
     )
 
 
