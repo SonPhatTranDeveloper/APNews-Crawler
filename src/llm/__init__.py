@@ -6,7 +6,7 @@ import openai
 from src.model import CrawledNews
 
 
-def analyze_article_content(api_key: str, crawled_news: CrawledNews) -> Dict:
+def analyze_article_content(crawled_news: CrawledNews, api_key: str, ) -> Dict:
     """
     Analyze English news article content using ChatGPT API (function calling).
     Returns an ArticleAnalysis dataclass instance.

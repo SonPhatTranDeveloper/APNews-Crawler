@@ -15,6 +15,7 @@ def main():
     load_dotenv()
     news_api_key = os.getenv("NEWS_API_KEY")
     openai_api_key = os.getenv("OPENAI_API_KEY")
+    scraper_api_key = os.getenv("SCRAPER_API_KEY")
     service_account_location = os.getenv("FIREBASE_SERVICE_ACCOUNT")
 
     # Get firebase token
@@ -28,10 +29,10 @@ def main():
     for article in tqdm(news):
         try:
             # Crawl the article
-            crawled_article = crawl_ap_article(article)
+            crawled_article = crawl_ap_article(article, api_key=scraper_api_key)
 
             # Analyze the article
-            analyzed_article = analyze_article_content(openai_api_key, crawled_article)
+            analyzed_article = analyze_article_content(crawled_article, api_key=openai_api_key)
 
             # Insert it into the Firestore
             insert_document_firestore_rest(

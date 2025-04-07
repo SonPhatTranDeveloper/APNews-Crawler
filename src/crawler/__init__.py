@@ -12,9 +12,9 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def crawl_ap_article(news: InitialNews) -> CrawledNews:
+def crawl_ap_article(news: InitialNews, api_key: str) -> CrawledNews:
     # Call API
-    payload = {"api_key": "57d662980d58e442b7d23ffc2dee710c", "url": news.url}
+    payload = {"api_key": api_key, "url": news.url}
     r = requests.get("https://api.scraperapi.com/", params=payload)
 
     # Get the text and create soup
