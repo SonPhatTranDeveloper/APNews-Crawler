@@ -35,6 +35,7 @@ def get_headlines_by_source(
             author=article.get("author"),
             title=article.get("title"),
             url=article.get("url"),
+            imageUrl=article.get("urlToImage"),
         )
         for article in articles
     ]

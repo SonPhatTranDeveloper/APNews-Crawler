@@ -28,6 +28,8 @@ def crawl_ap_article(news: InitialNews, api_key: str) -> CrawledNews:
     content = content_div.get_text(strip=True) if content_div else ""
 
     return CrawledNews(
-        article=InitialNews(author=news.author, title=news.title, url=news.url),
+        article=InitialNews(
+            author=news.author, title=news.title, url=news.url, imageUrl=news.imageUrl
+        ),
         content=[content],
     )

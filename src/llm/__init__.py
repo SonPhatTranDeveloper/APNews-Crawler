@@ -164,6 +164,7 @@ def analyze_article_content(
             "url": article.url,
             "title": article.title,
             "author": article.author,
+            "imageUrl": article.imageUrl,
         }
     )
 

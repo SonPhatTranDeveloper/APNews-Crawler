@@ -6,6 +6,7 @@ class InitialNews:
     author: str
     title: str
     url: str
+    imageUrl: str
 
 
 @dataclass
