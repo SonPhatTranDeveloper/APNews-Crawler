@@ -7,6 +7,7 @@ from src.crawler import crawl_ap_article
 from src.firebase import insert_document_firestore_rest, get_firestore_access_token
 from src.llm import analyze_article_content
 from src.news import get_headlines_by_source
+from src.utils import url_to_document_id
 
 
 def load_api_keys():
@@ -16,17 +17,26 @@ def load_api_keys():
         "news_api_key": os.getenv("NEWS_API_KEY"),
         "openai_api_key": os.getenv("OPENAI_API_KEY"),
         "scraper_api_key": os.getenv("SCRAPER_API_KEY"),
-        "service_account_path": os.getenv("FIREBASE_SERVICE_ACCOUNT"),
+        "service_account_path": os.getenv("GOOGLE_APPLICATION_CREDENTIALS"),
     }
 
 
 def process_article(article, scraper_key, openai_key, access_token):
     """Crawl, analyze, and insert a single article into Firestore."""
+    # Crawl content using ScraperAI
     crawled = crawl_ap_article(article, api_key=scraper_key)
+
+    # Analyze the article content using ChatGPT
     analyzed = analyze_article_content(crawled, api_key=openai_key)
+
+    # Get the URL from document and encode
+    encoded_url = url_to_document_id(analyzed["url"])
+
+    # Insert document
     insert_document_firestore_rest(
         access_token=access_token,
         collection="articles",
+        document_id=encoded_url,
         document_data=analyzed,
     )
 
