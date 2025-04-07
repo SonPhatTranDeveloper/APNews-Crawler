@@ -101,7 +101,13 @@ def analyze_article_content(crawled_news: CrawledNews, api_key: str, ) -> Dict:
                             },
                             "usage": {
                                 "type": "string",
-                                "description": "Longest explaination of how to use the word. DO NOT INCLUDE examples in this section. MUST BE in Vietnamese. PLEASE DO NOT write this in English",
+                                "description": (
+                                    "Longest explaination of how to use the word. "
+                                    "DO NOT INCLUDE examples in this section. "
+                                    "MUST BE in Vietnamese. "
+                                    "PLEASE DO NOT write this in English. "
+                                    "DO NOT START WITH the word itself."
+                                ),
                             },
                             "example": {
                                 "type": "array",
