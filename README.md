@@ -173,7 +173,7 @@ Build APNews-Crawler from the source and install dependencies:
 Run the project with:
 
     ```sh
-    ❯ uv run python main.py
+    ❯ uv python main.py
     ```
 
 ---
@@ -186,6 +186,3 @@ Run the project with:
 
 
 [back-to-top]: https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square
-
-
----
