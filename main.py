@@ -32,7 +32,9 @@ def main():
             crawled_article = crawl_ap_article(article, api_key=scraper_api_key)
 
             # Analyze the article
-            analyzed_article = analyze_article_content(crawled_article, api_key=openai_api_key)
+            analyzed_article = analyze_article_content(
+                crawled_article, api_key=openai_api_key
+            )
 
             # Insert it into the Firestore
             insert_document_firestore_rest(

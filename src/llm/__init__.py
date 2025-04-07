@@ -6,7 +6,10 @@ import openai
 from src.model import CrawledNews
 
 
-def analyze_article_content(crawled_news: CrawledNews, api_key: str, ) -> Dict:
+def analyze_article_content(
+    crawled_news: CrawledNews,
+    api_key: str,
+) -> Dict:
     """
     Analyze English news article content using ChatGPT API (function calling).
     Returns an ArticleAnalysis dataclass instance.
@@ -73,7 +76,7 @@ def analyze_article_content(crawled_news: CrawledNews, api_key: str, ) -> Dict:
                         "properties": {
                             "word": {
                                 "type": "string",
-                                "description": "Make sure that the word is in the EXACT same form as it appears in the shortened version. DO NOT change the form of the word. DO NOT choose words which are private names/information. "
+                                "description": "Make sure that the word is in the EXACT same form as it appears in the shortened version. DO NOT change the form of the word. DO NOT choose words which are private names/information. ",
                             },
                             "base": {
                                 "type": "string",
