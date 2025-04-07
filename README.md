@@ -3,8 +3,6 @@
 <!-- HEADER STYLE: CLASSIC -->
 <div align="center">
 
-<img src="readmeai/assets/logos/purple.svg" width="30%" style="position: relative; top: 0; right: 0;" alt="Project Logo"/>
-
 # APNEWS-CRAWLER
 
 <em>Unleash the power of real-time news insights.</em>
@@ -159,17 +157,9 @@ Build APNews-Crawler from the source and intsall dependencies:
 
 3. **Install the dependencies:**
 
-<!-- SHIELDS BADGE CURRENTLY DISABLED -->
-	<!-- [![uv][uv-shield]][uv-link] -->
-	<!-- REFERENCE LINKS -->
-	<!-- [uv-shield]: None -->
-	<!-- [uv-link]: None -->
-
-	**Using [uv](None):**
-
-	```sh
-	uv pip install -r pyproject.toml
-	```
+```sh
+uv pip install -r pyproject.toml
+```
 
 ### Usage
 
