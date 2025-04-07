@@ -67,7 +67,7 @@ def analyze_article_content(api_key: str, crawled_news: CrawledNews) -> Dict:
                 },
                 "words": {
                     "type": "array",
-                    "description": "At least 10 Words/Phrases in the shortened version that are most notable, interesting, most-frequently used, or challenging. Do not include any private names/information. Eliminate any empty word from the array",
+                    "description": "MUST INCLUDE At least 15 words/phrases in the shortened version that are most notable, interesting, most-frequently used, or challenging. Do not include any private names/information. Eliminate any empty word from the array",
                     "items": {
                         "type": "object",
                         "properties": {
@@ -96,16 +96,15 @@ def analyze_article_content(api_key: str, crawled_news: CrawledNews) -> Dict:
                                     "cụm động từ",
                                 ],
                             },
-                            "usage": {
+                            "meaning": {
                                 "type": "string",
-                                "description": "Explain how to use the word (Explanation in Vietnamese)",
+                                "description": "Giải thích cách sử dụng từ bằng tiếng Việt. ĐỪNG giải thích bằng tiếng Anh.",
                             },
                             "example": {
                                 "type": "array",
                                 "items": {"type": "string"},
-                                "description": "Two example sentences in English",
+                                "description": "MUST INCLUDE THREE (3) example sentences in English",
                                 "minItems": 3,
-                                "maxItems": 3,
                             },
                         },
                         "required": [
@@ -113,12 +112,11 @@ def analyze_article_content(api_key: str, crawled_news: CrawledNews) -> Dict:
                             "base",
                             "translation",
                             "type",
-                            "usage",
+                            "meaning",
                             "example",
                         ],
-                        "minItems": 10,
-                        "maxItems": 15,
                     },
+                    "minItems": 15,
                 },
             },
             "required": ["shortened", "sentences", "category", "words"],
@@ -136,11 +134,11 @@ def analyze_article_content(api_key: str, crawled_news: CrawledNews) -> Dict:
 
     # Get the response from GPT-4-turbo
     response = client.chat.completions.create(
-        model="gpt-4-turbo",
+        model="gpt-4",
         messages=messages,
         functions=[function_schema],
         function_call={"name": "analyze_article"},
-        temperature=0.7,
+        temperature=1.0,
     )
 
     # Parse the arguments to JSON data and return the dictionary
