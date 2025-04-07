@@ -172,9 +172,9 @@ Build APNews-Crawler from the source and install dependencies:
 
 Run the project with:
 
-    ```sh
-    ❯ uv python main.py
-    ```
+   ```sh
+   ❯ uv python main.py
+   ```
 
 ---
 
