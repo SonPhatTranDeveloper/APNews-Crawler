@@ -45,13 +45,3 @@ def get_headlines_by_source(api_key: str, source_id: str) -> List[InitialNews]:
     else:
         print(f"Failed to fetch news: {response.status_code} - {response.text}")
         return []
-
-
-if __name__ == "__main__":
-    # Get environment key
-    load_dotenv()
-    api_key = os.getenv("NEWS_API_KEY")
-
-    # Get the news
-    news = get_headlines_by_source(api_key, "bbc-news")
-    print(news)
