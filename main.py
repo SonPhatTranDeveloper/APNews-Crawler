@@ -9,42 +9,47 @@ from src.llm import analyze_article_content
 from src.news import get_headlines_by_source
 
 
-def main():
-    """Execute the code"""
-    # Load the environment variables
+def load_api_keys():
+    """Load environment variables and return necessary API keys and credentials."""
     load_dotenv()
-    news_api_key = os.getenv("NEWS_API_KEY")
-    openai_api_key = os.getenv("OPENAI_API_KEY")
-    scraper_api_key = os.getenv("SCRAPER_API_KEY")
-    service_account_location = os.getenv("FIREBASE_SERVICE_ACCOUNT")
+    return {
+        "news_api_key": os.getenv("NEWS_API_KEY"),
+        "openai_api_key": os.getenv("OPENAI_API_KEY"),
+        "scraper_api_key": os.getenv("SCRAPER_API_KEY"),
+        "service_account_path": os.getenv("FIREBASE_SERVICE_ACCOUNT"),
+    }
 
-    # Get firebase token
-    access_token = get_firestore_access_token(service_account_location)
-    print("Access token obtained")
 
-    # Get the news
-    news = get_headlines_by_source(news_api_key, "associated-press")
+def process_article(article, scraper_key, openai_key, access_token):
+    """Crawl, analyze, and insert a single article into Firestore."""
+    crawled = crawl_ap_article(article, api_key=scraper_key)
+    analyzed = analyze_article_content(crawled, api_key=openai_key)
+    insert_document_firestore_rest(
+        access_token=access_token,
+        collection="articles",
+        document_data=analyzed,
+    )
 
-    # Extract the content from the first news
-    for article in tqdm(news):
+
+def main():
+    """Main execution flow."""
+    keys = load_api_keys()
+
+    access_token = get_firestore_access_token(keys["service_account_path"])
+    print("Firebase access token obtained.")
+
+    articles = get_headlines_by_source("associated-press", keys["news_api_key"])
+
+    for article in tqdm(articles, desc="Processing articles"):
         try:
-            # Crawl the article
-            crawled_article = crawl_ap_article(article, api_key=scraper_api_key)
-
-            # Analyze the article
-            analyzed_article = analyze_article_content(
-                crawled_article, api_key=openai_api_key
-            )
-
-            # Insert it into the Firestore
-            insert_document_firestore_rest(
+            process_article(
+                article,
+                scraper_key=keys["scraper_api_key"],
+                openai_key=keys["openai_api_key"],
                 access_token=access_token,
-                collection="articles",
-                document_data=analyzed_article,
             )
-
         except Exception as e:
-            print(f"Error inserting document: {e}")
+            print(f"Failed to process article: {e}")
 
 
 if __name__ == "__main__":

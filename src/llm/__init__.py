@@ -155,10 +155,16 @@ def analyze_article_content(
 
     # Parse the arguments to JSON data and return the dictionary
     function_args = response.choices[0].message.function_call.arguments
-    json_data = json.loads(function_args)
+    analysis_result = json.loads(function_args)
 
-    # Add title
-    json_data["url"] = crawled_news.article.url
-    json_data["title"] = crawled_news.article.title
-    json_data["author"] = crawled_news.article.author
-    return json_data
+    # Add metadata
+    article = crawled_news.article
+    analysis_result.update(
+        {
+            "url": article.url,
+            "title": article.title,
+            "author": article.author,
+        }
+    )
+
+    return analysis_result
