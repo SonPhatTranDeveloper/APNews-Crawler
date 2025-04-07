@@ -34,7 +34,6 @@
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
     - [Usage](#usage)
-    - [Testing](#testing)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
 - [License](#license)
@@ -141,7 +140,18 @@ This project requires the following dependencies:
 
 ### Installation
 
-Build APNews-Crawler from the source and intsall dependencies:
+Before running, make sure you have the following environment variables set:
+
+```bash
+export NEWS_API_KEY=your_newsapi_key
+export OPENAI_API_KEY=your_openai_key
+export SCRAPER_API_KEY=your_scraperapi_key
+export GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/service-account.json
+```
+
+You can use a `.env` file and `python-dotenv` to load them automatically in development.
+
+Build APNews-Crawler from the source and install dependencies:
 
 1. **Clone the repository:**
 
@@ -165,13 +175,9 @@ uv pip install -r pyproject.toml
 
 Run the project with:
 
-**Using [uv](None):**
 ```sh
 uv run python main.py
 ```
-
-### Testing
-
 
 ## Contributing
 
