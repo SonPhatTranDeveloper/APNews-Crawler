@@ -35,9 +35,6 @@
     - [Installation](#installation)
     - [Usage](#usage)
 - [Roadmap](#roadmap)
-- [Contributing](#contributing)
-- [License](#license)
-- [Acknowledgments](#acknowledgments)
 
 ---
 
@@ -167,70 +164,19 @@ Build APNews-Crawler from the source and install dependencies:
 
 3. **Install the dependencies:**
 
-```sh
-uv pip install -r pyproject.toml
-```
+    ```sh
+    ❯ uv pip install -r pyproject.toml
+    ```
 
 ### Usage
 
 Run the project with:
 
-```sh
-uv run python main.py
-```
-
-## Contributing
-
-- **💬 [Join the Discussions](https://github.com/SonPhatTranDeveloper/APNews-Crawler/discussions)**: Share your insights, provide feedback, or ask questions.
-- **🐛 [Report Issues](https://github.com/SonPhatTranDeveloper/APNews-Crawler/issues)**: Submit bugs found or log feature requests for the `APNews-Crawler` project.
-- **💡 [Submit Pull Requests](https://github.com/SonPhatTranDeveloper/APNews-Crawler/blob/main/CONTRIBUTING.md)**: Review open PRs, and submit your own PRs.
-
-<details closed>
-<summary>Contributing Guidelines</summary>
-
-1. **Fork the Repository**: Start by forking the project repository to your github account.
-2. **Clone Locally**: Clone the forked repository to your local machine using a git client.
-   ```sh
-   git clone https://github.com/SonPhatTranDeveloper/APNews-Crawler
-   ```
-3. **Create a New Branch**: Always work on a new branch, giving it a descriptive name.
-   ```sh
-   git checkout -b new-feature-x
-   ```
-4. **Make Your Changes**: Develop and test your changes locally.
-5. **Commit Your Changes**: Commit with a clear message describing your updates.
-   ```sh
-   git commit -m 'Implemented new feature x.'
-   ```
-6. **Push to github**: Push the changes to your forked repository.
-   ```sh
-   git push origin new-feature-x
-   ```
-7. **Submit a Pull Request**: Create a PR against the original project repository. Clearly describe the changes and their motivations.
-8. **Review**: Once your PR is reviewed and approved, it will be merged into the main branch. Congratulations on your contribution!
-</details>
-
-<details closed>
-<summary>Contributor Graph</summary>
-<br>
-<p align="left">
-   <a href="https://github.com{/SonPhatTranDeveloper/APNews-Crawler/}graphs/contributors">
-      <img src="https://contrib.rocks/image?repo=SonPhatTranDeveloper/APNews-Crawler">
-   </a>
-</p>
-</details>
+    ```sh
+    ❯ uv run python main.py
+    ```
 
 ---
-
-## License
-
-Apnews-crawler is protected under the [LICENSE](https://choosealicense.com/licenses) License. For more details, refer to the [LICENSE](https://choosealicense.com/licenses/) file.
-
----
-
-## Acknowledgments
-
-- Credit `contributors`, `inspiration`, `references`, etc.
 
 <div align="right">
 
