@@ -60,13 +60,14 @@ def analyze_article_content(
                 "category": {
                     "type": "string",
                     "enum": [
-                        "business",
-                        "entertainment",
-                        "general",
-                        "health",
-                        "science",
-                        "sports",
-                        "technology",
+                        "Kinh tế",
+                        "Chính trị",
+                        "Giải trí",
+                        "Tin chung",
+                        "Sức khoẻ",
+                        "Khoa học",
+                        "Thể thao",
+                        "Công nghệ",
                     ],
                 },
                 "words": {
