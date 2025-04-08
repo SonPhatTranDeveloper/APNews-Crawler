@@ -70,6 +70,11 @@ def analyze_article_content(
                         "Công nghệ",
                     ],
                 },
+                "difficulty": {
+                    "type": "string",
+                    "description": "The level of difficulty of the reading for an English learner",
+                    "enum": ["Dễ", "Trung bình", "Thử thách"],
+                },
                 "words": {
                     "type": "array",
                     "description": "MUST INCLUDE At least 15 words/phrases in the shortened version that are most notable, interesting, most-frequently used, or challenging. Eliminate any empty word from the array",
@@ -133,7 +138,7 @@ def analyze_article_content(
                     "minItems": 15,
                 },
             },
-            "required": ["shortened", "sentences", "category", "words"],
+            "required": ["shortened", "sentences", "category", "words", "difficulty"],
         },
     }
 

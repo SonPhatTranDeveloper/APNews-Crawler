@@ -5,8 +5,7 @@ from tqdm import tqdm
 
 from constants import FIREBASE_COLLECTION, NEWS_SOURCE
 from src.crawler import crawl_ap_article
-from src.firebase import (get_firestore_access_token,
-                          insert_document_firestore_rest)
+from src.firebase import get_firestore_access_token, insert_document_firestore_rest
 from src.llm import analyze_article_content
 from src.news import get_headlines_by_source
 from src.utils import url_to_document_id
