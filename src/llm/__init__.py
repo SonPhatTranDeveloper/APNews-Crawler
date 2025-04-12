@@ -92,10 +92,13 @@ def analyze_article_content(
     step1_data = json.loads(step1_response.choices[0].message.function_call.arguments)
     shortened = step1_data["shortened"]
 
-    # STEP 2: Function schema for vocabulary analysis
+    # STEP 2: Function schema for vocabulary analysis and bilingual quiz generation
     step2_function_schema = {
         "name": "extract_vocabulary",
-        "description": "Extracts vocabulary that appears in the shortened version and categorizes them by difficulty.",
+        "description": (
+            "Extracts vocabulary that appears in the shortened version and categorizes them by difficulty. "
+            "Also generates a 5-question multiple choice quiz (with each option having both English and Vietnamese)."
+        ),
         "parameters": {
             "type": "object",
             "properties": {
@@ -117,8 +120,56 @@ def analyze_article_content(
                     "description": "Advanced or challenging words from the shortened version",
                     "items": {"$ref": "#/definitions/word"},
                 },
+                "quiz": {
+                    "type": "array",
+                    "minItems": 5,
+                    "maxItems": 5,
+                    "description": "Multiple-choice quiz to test understanding, with bilingual options",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "question": {
+                                "type": "object",
+                                "properties": {
+                                    "en": {"type": "string"},
+                                    "vi": {"type": "string"},
+                                },
+                                "required": ["en", "vi"],
+                            },
+                            "options": {
+                                "type": "array",
+                                "minItems": 4,
+                                "maxItems": 4,
+                                "description": "Four answer choices, each with English and Vietnamese text",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "en": {"type": "string"},
+                                        "vi": {"type": "string"},
+                                    },
+                                    "required": ["en", "vi"],
+                                },
+                            },
+                            "correct_answer": {
+                                "type": "object",
+                                "properties": {
+                                    "en": {
+                                        "type": "string",
+                                        "description": "Must match one of the option.en values",
+                                    },
+                                    "vi": {
+                                        "type": "string",
+                                        "description": "Must match one of the option.vi values",
+                                    },
+                                },
+                                "required": ["en", "vi"],
+                            },
+                        },
+                        "required": ["question", "options", "correct_answer"],
+                    },
+                },
             },
-            "required": ["easy_words", "medium_words", "hard_words"],
+            "required": ["easy_words", "medium_words", "hard_words", "quiz"],
         },
         "definitions": {
             "word": {
@@ -145,12 +196,13 @@ def analyze_article_content(
                     "usage": {"type": "string"},
                     "example": {
                         "type": "array",
-                        "description": "MUST INCLUDE THREE (3) examples for the word in a sentence (In English).", 
+                        "description": "MUST INCLUDE THREE (3) examples for the word in a sentence (In English).",
                         "minItems": 3,
+                        "maxItems": 3,
                         "items": {"type": "string"},
                     },
                 },
-                "required": ["word", "base", "translation", "type", "usage", "example"],
+                "required": ["word", "base", "example", "translation", "type", "usage"],
             }
         },
     }
@@ -161,13 +213,20 @@ def analyze_article_content(
             "content": (
                 "You extract vocabulary that appears EXACTLY in the input text and group it by difficulty.\n"
                 "Return JSON with 'easy_words', 'medium_words', and 'hard_words', each containing 15+ words.\n"
-                "Each word entry must include: word, base, translation (Vietnamese), type (in Vietnamese), usage (in Vietnamese), example (3 sentences in English).\n"
-                "Do NOT make up any word that is not in the shortened version."
+                "Each word must include: word, base, translation (Vietnamese), type (in Vietnamese), usage (in Vietnamese), and 3 example sentences in English\n\n"
+                "Then generate a 5-question multiple choice quiz to test reading comprehension of the shortened version.\n"
+                "Each quiz entry must include:\n"
+                "- question: {en: English version, vi: Vietnamese translation}\n"
+                "- options: array of 4 choices, each like {en: ..., vi: ...}\n"
+                "- correct_answer: {en: correct English choice, vi: correct Vietnamese translation (must match one of the options)}\n"
+                "Remember to specifically INCLUDE THE QUIZ - NEVER OMIT THE QUIZ\n"
+                "Remember to specifically INCLUDE THE 3 EXAMPLES - NEVER OMIT THE EXAMPLES.\n\n"
+                "Do NOT invent vocabulary or quiz questions not based directly on the shortened version."
             ),
         },
         {
             "role": "user",
-            "content": f"Analyze vocabulary from this shortened version:\n\n{shortened}",
+            "content": f"Analyze vocabulary and generate a bilingual quiz from this shortened version:\n\n{shortened}",
         },
     ]
 

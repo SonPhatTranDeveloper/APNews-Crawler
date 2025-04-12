@@ -8,6 +8,7 @@ from src.model import InitialNews
 def get_headlines_by_source(
     source_id: str,
     api_key: str,
+    total: int = 10,
 ) -> List[InitialNews]:
     """
     Fetch the top headlines from a specific news source using NewsAPI.
@@ -15,12 +16,13 @@ def get_headlines_by_source(
     Args:
         api_key (str): API key for NewsAPI.
         source_id (str): The ID of the news source.
+        total (int): The total number of news
 
     Returns:
         List[InitialNews]: A list of news headlines as InitialNews objects.
     """
     url = "https://newsapi.org/v2/top-headlines"
-    params = {"sources": source_id, "apiKey": api_key}
+    params = {"sources": source_id, "apiKey": api_key, "pageSize": str(total)}
 
     try:
         response = requests.get(url, params=params)

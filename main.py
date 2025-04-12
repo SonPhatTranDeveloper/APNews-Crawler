@@ -30,6 +30,7 @@ def process_article(article, scraper_key, openai_key, access_token):
 
     # Analyze the article content using ChatGPT
     analyzed = analyze_article_content(crawled, api_key=openai_key)
+    pprint.pprint(analyzed)
 
     # Get the URL from document and encode
     encoded_url = url_to_document_id(analyzed["url"])
@@ -50,7 +51,7 @@ def main():
     access_token = get_firestore_access_token(keys["service_account_path"])
     print("Firebase access token obtained.")
 
-    articles = get_headlines_by_source(NEWS_SOURCE, keys["news_api_key"])
+    articles = get_headlines_by_source(NEWS_SOURCE, keys["news_api_key"], total=5)
 
     for article in tqdm(articles, desc="Processing articles"):
         try:
