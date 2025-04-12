@@ -28,7 +28,7 @@ def analyze_article_content(
             "properties": {
                 "shortened": {
                     "type": "string",
-                    "description": "The rewritten article in 500-800 words, simplified, engaging, and natural.",
+                    "description": "The rewritten article in 300-600 words, simplified, engaging, and natural.",
                 },
                 "sentences": {
                     "type": "array",
@@ -70,7 +70,7 @@ def analyze_article_content(
             "content": (
                 "You are an assistant that summarizes English articles and translates each sentence into Vietnamese.\n"
                 "Return a JSON object with: 'shortened', 'sentences', 'category', and 'difficulty'.\n"
-                "The 'shortened' must be 500-800 words, human-readable, and engaging.\n"
+                "The 'shortened' must be 300-600 words, human-readable, and engaging.\n"
                 "Each sentence in the shortened version must have its English-Vietnamese pair in 'sentences'.\n"
                 "Also classify the article's category and estimate its difficulty for English learners."
             ),
@@ -104,19 +104,19 @@ def analyze_article_content(
             "properties": {
                 "easy_words": {
                     "type": "array",
-                    "minItems": 15,
+                    "minItems": 7,
                     "description": "Words from the shortened version that are simple and beginner-friendly",
                     "items": {"$ref": "#/definitions/word"},
                 },
                 "medium_words": {
                     "type": "array",
-                    "minItems": 15,
+                    "minItems": 7,
                     "description": "Intermediate words from the shortened version",
                     "items": {"$ref": "#/definitions/word"},
                 },
                 "hard_words": {
                     "type": "array",
-                    "minItems": 15,
+                    "minItems": 7,
                     "description": "Advanced or challenging words from the shortened version",
                     "items": {"$ref": "#/definitions/word"},
                 },
@@ -196,9 +196,8 @@ def analyze_article_content(
                     "usage": {"type": "string"},
                     "example": {
                         "type": "array",
-                        "description": "MUST INCLUDE THREE (3) examples for the word in a sentence (In English).",
-                        "minItems": 3,
-                        "maxItems": 3,
+                        "description": "MUST INCLUDE TWO (2) examples for the word in a sentence (In English).",
+                        "minItems": 2,
                         "items": {"type": "string"},
                     },
                 },
@@ -213,14 +212,14 @@ def analyze_article_content(
             "content": (
                 "You extract vocabulary that appears EXACTLY in the input text and group it by difficulty.\n"
                 "Return JSON with 'easy_words', 'medium_words', and 'hard_words', each containing 15+ words.\n"
-                "Each word must include: word, base, translation (Vietnamese), type (in Vietnamese), usage (in Vietnamese), and 3 example sentences in English\n\n"
+                "Each word must include: word, base, translation (Vietnamese), type (in Vietnamese), usage (in Vietnamese), and 2 example sentences in English\n\n"
                 "Then generate a 5-question multiple choice quiz to test reading comprehension of the shortened version.\n"
                 "Each quiz entry must include:\n"
                 "- question: {en: English version, vi: Vietnamese translation}\n"
                 "- options: array of 4 choices, each like {en: ..., vi: ...}\n"
                 "- correct_answer: {en: correct English choice, vi: correct Vietnamese translation (must match one of the options)}\n"
                 "Remember to specifically INCLUDE THE QUIZ - NEVER OMIT THE QUIZ\n"
-                "Remember to specifically INCLUDE THE 3 EXAMPLES - NEVER OMIT THE EXAMPLES.\n\n"
+                "Remember to specifically INCLUDE THE 2 EXAMPLES - NEVER OMIT THE EXAMPLES.\n\n"
                 "Do NOT invent vocabulary or quiz questions not based directly on the shortened version."
             ),
         },
