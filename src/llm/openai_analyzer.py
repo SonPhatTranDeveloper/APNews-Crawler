@@ -1,14 +1,10 @@
 import json
+from abc import ABC, abstractmethod
 from typing import Dict
 
 import openai
 
 from constants import OPENAI_MODEL, OPENAI_TEMP
-from .base_analyzer import BaseArticleAnalyzer
-
-from abc import ABC, abstractmethod
-from typing import Dict
-
 from src.model import FullArticle
 
 

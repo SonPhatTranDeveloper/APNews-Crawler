@@ -5,7 +5,7 @@ from typing import Dict, Type
 from tqdm import tqdm
 
 from constants import FIREBASE_COLLECTION, NEWS_SOURCE
-from src.crawler import BaseNewsCrawler, APNewsCrawler
+from src.crawler import APNewsCrawler, BaseNewsCrawler
 from src.firebase import BaseFirebaseClient, FirestoreClient
 from src.llm import BaseArticleAnalyzer, OpenAIArticleAnalyzer
 from src.news import BaseNewsClient, NewsAPIClient

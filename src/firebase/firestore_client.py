@@ -1,4 +1,5 @@
 import json
+from abc import ABC, abstractmethod
 from typing import Any, Dict
 
 import requests
@@ -6,11 +7,6 @@ from google.auth.transport.requests import Request
 from google.oauth2 import service_account
 
 from constants import FIREBASE_PROJECT_ID
-from .base_client import BaseFirebaseClient
-
-
-from abc import ABC, abstractmethod
-from typing import Any, Dict
 
 
 class BaseFirebaseClient(ABC):

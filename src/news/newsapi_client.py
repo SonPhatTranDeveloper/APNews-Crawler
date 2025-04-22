@@ -1,9 +1,7 @@
+from abc import ABC, abstractmethod
 from typing import List
 
 import requests
-
-from abc import ABC, abstractmethod
-from typing import List
 
 from src.model import PartialArticle
 

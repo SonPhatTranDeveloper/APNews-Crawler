@@ -1,7 +1,9 @@
-from src.model import FullArticle, PartialArticle
+from abc import ABC, abstractmethod
+
 import requests
 from bs4 import BeautifulSoup
-from abc import ABC, abstractmethod
+
+from src.model import FullArticle, PartialArticle
 
 
 class BaseNewsCrawler(ABC):
