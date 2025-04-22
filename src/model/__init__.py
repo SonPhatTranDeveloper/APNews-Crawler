@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class InitialNews:
+class PartialArticle:
     author: str
     title: str
     url: str
@@ -10,6 +10,6 @@ class InitialNews:
 
 
 @dataclass
-class CrawledNews:
-    article: InitialNews
+class FullArticle:
+    article: PartialArticle
     content: str

@@ -1,19 +1,79 @@
 import os
 import pprint
+from typing import Dict
 
 from dotenv import load_dotenv
 from tqdm import tqdm
 
 from constants import FIREBASE_COLLECTION, NEWS_SOURCE
-from src.crawler import crawl_ap_article
-from src.firebase import get_firestore_access_token, insert_document_firestore_rest
-from src.llm import analyze_article_content
-from src.news import get_headlines_by_source
+from src.crawler import APNewsCrawler
+from src.firebase import FirestoreClient
+from src.llm import OpenAIArticleAnalyzer
+from src.news import NewsAPIClient
 from src.utils import url_to_document_id
 
 
-def load_api_keys():
-    """Load environment variables and return necessary API keys and credentials."""
+class NewsProcessor:
+    """Class to handle the news processing pipeline."""
+
+    def __init__(self, api_keys: Dict[str, str]):
+        """Initialize the news processor with API keys.
+
+        Args:
+            api_keys (Dict[str, str]): Dictionary containing all required API keys.
+        """
+        self.api_keys = api_keys
+        self.news_client = NewsAPIClient(api_keys["news_api_key"])
+        self.crawler = APNewsCrawler(api_keys["scraper_api_key"])
+        self.analyzer = OpenAIArticleAnalyzer(api_keys["openai_api_key"])
+        self.firestore_client = FirestoreClient(api_keys["service_account_path"])
+
+    def process_article(self, article):
+        """Process a single article through the pipeline.
+
+        Args:
+            article: The article to process.
+        """
+        # Crawl content
+        crawled = self.crawler.crawl_article(article)
+
+        # Analyze the article content
+        analyzed = self.analyzer.analyze_article(crawled)
+        pprint.pprint(analyzed)
+
+        # Get the URL from document and encode
+        encoded_url = url_to_document_id(analyzed["url"])
+
+        # Insert document
+        self.firestore_client.insert_document(
+            collection=FIREBASE_COLLECTION,
+            document_id=encoded_url,
+            document_data=analyzed,
+        )
+
+    def run(self, total_articles: int = 5):
+        """Run the news processing pipeline.
+
+        Args:
+            total_articles (int): Number of articles to process.
+        """
+        # Get headlines
+        articles = self.news_client.get_headlines(NEWS_SOURCE, total=total_articles)
+
+        # Process each article
+        for article in tqdm(articles, desc="Processing articles"):
+            try:
+                self.process_article(article)
+            except Exception as e:
+                print(f"Failed to process article: {e}")
+
+
+def load_api_keys() -> Dict[str, str]:
+    """Load environment variables and return necessary API keys and credentials.
+
+    Returns:
+        Dict[str, str]: Dictionary containing all required API keys.
+    """
     load_dotenv()
     return {
         "news_api_key": os.getenv("NEWS_API_KEY"),
@@ -23,46 +83,14 @@ def load_api_keys():
     }
 
 
-def process_article(article, scraper_key, openai_key, access_token):
-    """Crawl, analyze, and insert a single article into Firestore."""
-    # Crawl content using ScraperAI
-    crawled = crawl_ap_article(article, api_key=scraper_key)
-
-    # Analyze the article content using ChatGPT
-    analyzed = analyze_article_content(crawled, api_key=openai_key)
-    pprint.pprint(analyzed)
-
-    # Get the URL from document and encode
-    encoded_url = url_to_document_id(analyzed["url"])
-
-    # Insert document
-    insert_document_firestore_rest(
-        access_token=access_token,
-        collection=FIREBASE_COLLECTION,
-        document_id=encoded_url,
-        document_data=analyzed,
-    )
-
-
 def main():
     """Main execution flow."""
-    keys = load_api_keys()
+    # Load API keys
+    api_keys = load_api_keys()
 
-    access_token = get_firestore_access_token(keys["service_account_path"])
-    print("Firebase access token obtained.")
-
-    articles = get_headlines_by_source(NEWS_SOURCE, keys["news_api_key"], total=5)
-
-    for article in tqdm(articles, desc="Processing articles"):
-        try:
-            process_article(
-                article,
-                scraper_key=keys["scraper_api_key"],
-                openai_key=keys["openai_api_key"],
-                access_token=access_token,
-            )
-        except Exception as e:
-            print(f"Failed to process article: {e}")
+    # Create and run the news processor
+    processor = NewsProcessor(api_keys)
+    processor.run()
 
 
 if __name__ == "__main__":

@@ -5,14 +5,20 @@ from google.auth.transport.requests import Request
 from google.oauth2 import service_account
 
 from constants import FIREBASE_PROJECT_ID
+from .firestore_client import FirestoreClient
 
 
 def get_firestore_access_token(service_account_path: str) -> str:
-    credentials = service_account.Credentials.from_service_account_file(
-        service_account_path, scopes=["https://www.googleapis.com/auth/datastore"]
-    )
-    credentials.refresh(Request())
-    return credentials.token
+    """Legacy function to get Firestore access token.
+    
+    Args:
+        service_account_path (str): Path to the service account JSON file.
+        
+    Returns:
+        str: OAuth2 access token.
+    """
+    client = FirestoreClient(service_account_path)
+    return client.get_access_token()
 
 
 def insert_document_firestore_rest(
@@ -20,60 +26,22 @@ def insert_document_firestore_rest(
     collection: str,
     document_id: str,
     document_data: dict,
-    project_id: str = FIREBASE_PROJECT_ID,
+    project_id: str = None,
 ) -> str:
-    """Inserts a document with a specified ID into Firestore via the REST API.
-
+    """Legacy function to insert a document into Firestore.
+    
     Args:
-        access_token (str): OAuth2 access token for Firestore.
-        collection (str): Firestore collection name.
-        document_id (str): Custom document ID.
-        document_data (dict): Document data in Python dict format.
+        access_token (str): OAuth2 access token.
+        collection (str): Collection name.
+        document_id (str): Document ID.
+        document_data (dict): Document data.
         project_id (str): Firebase/GCP project ID.
-
+        
     Returns:
-        str: JSON response from Firestore or error message.
+        str: JSON response from Firestore.
     """
-
-    def wrap_value(value):
-        if isinstance(value, str):
-            return {"stringValue": value}
-        elif isinstance(value, bool):
-            return {"booleanValue": value}
-        elif isinstance(value, int):
-            return {"integerValue": str(value)}
-        elif isinstance(value, float):
-            return {"doubleValue": value}
-        elif isinstance(value, list):
-            return {"arrayValue": {"values": [wrap_value(v) for v in value]}}
-        elif isinstance(value, dict):
-            return {"mapValue": {"fields": to_firestore_fields(value)}}
-        elif value is None:
-            return {"nullValue": None}
-        else:
-            raise TypeError(f"Unsupported type: {type(value)} for value: {value}")
-
-    def to_firestore_fields(data: dict) -> dict:
-        return {key: wrap_value(val) for key, val in data.items()}
-
-    firestore_fields = to_firestore_fields(document_data)
-
-    url = (
-        f"https://firestore.googleapis.com/v1/projects/{project_id}/"
-        f"databases/(default)/documents/{collection}/{document_id}"
-    )
-
-    headers = {
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json",
-    }
-
-    payload = {"fields": firestore_fields}
-    response = requests.patch(url, headers=headers, data=json.dumps(payload))
-
-    if response.ok:
-        return response.text
-    else:
-        raise Exception(
-            f"Error inserting document: {response.status_code} - {response.text}"
-        )
+    # Create a temporary client with the access token
+    client = FirestoreClient("", project_id)
+    client._access_token = access_token  # Set the access token directly
+    
+    return client.insert_document(collection, document_id, document_data)
