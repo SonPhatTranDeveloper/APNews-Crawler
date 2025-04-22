@@ -22,7 +22,7 @@ class BaseNewsClient(ABC):
         Returns:
             List[PartialArticle]: A list of news headlines.
         """
-        pass 
+        pass
 
 
 class NewsAPIClient(BaseNewsClient):
@@ -47,11 +47,7 @@ class NewsAPIClient(BaseNewsClient):
         Returns:
             List[PartialArticle]: A list of news headlines.
         """
-        params = {
-            "sources": source_id,
-            "apiKey": self.api_key,
-            "pageSize": str(total)
-        }
+        params = {"sources": source_id, "apiKey": self.api_key, "pageSize": str(total)}
 
         try:
             response = requests.get(self.base_url, params=params)
@@ -69,4 +65,4 @@ class NewsAPIClient(BaseNewsClient):
                 imageUrl=article.get("urlToImage"),
             )
             for article in articles
-        ] 
+        ]

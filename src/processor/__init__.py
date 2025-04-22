@@ -24,7 +24,7 @@ class BaseNewsProcessorFactory(ABC):
         self.api_keys = api_keys
 
     @abstractmethod
-    def create_processor(self) -> 'NewsProcessor':
+    def create_processor(self) -> "NewsProcessor":
         """Create a NewsProcessor instance.
 
         Returns:
@@ -36,7 +36,7 @@ class BaseNewsProcessorFactory(ABC):
 class DefaultNewsProcessorFactory(BaseNewsProcessorFactory):
     """Factory for creating NewsProcessors with default implementations."""
 
-    def create_processor(self) -> 'NewsProcessor':
+    def create_processor(self) -> "NewsProcessor":
         """Create a NewsProcessor with default implementations.
 
         Returns:
@@ -65,7 +65,7 @@ class CustomNewsProcessorFactory(BaseNewsProcessorFactory):
         crawler_class: Type[BaseNewsCrawler] = APNewsCrawler,
         analyzer_class: Type[BaseArticleAnalyzer] = OpenAIArticleAnalyzer,
         firestore_client_class: Type[BaseFirebaseClient] = FirestoreClient,
-        **kwargs
+        **kwargs,
     ):
         """Initialize the factory with custom implementations.
 
@@ -84,27 +84,24 @@ class CustomNewsProcessorFactory(BaseNewsProcessorFactory):
         self.firestore_client_class = firestore_client_class
         self.kwargs = kwargs
 
-    def create_processor(self) -> 'NewsProcessor':
+    def create_processor(self) -> "NewsProcessor":
         """Create a NewsProcessor with custom implementations.
 
         Returns:
             NewsProcessor: A processor with custom implementations.
         """
         news_client = self.news_client_class(
-            self.api_keys["news_api_key"],
-            **self.kwargs.get("news_client_kwargs", {})
+            self.api_keys["news_api_key"], **self.kwargs.get("news_client_kwargs", {})
         )
         crawler = self.crawler_class(
-            self.api_keys["scraper_api_key"],
-            **self.kwargs.get("crawler_kwargs", {})
+            self.api_keys["scraper_api_key"], **self.kwargs.get("crawler_kwargs", {})
         )
         analyzer = self.analyzer_class(
-            self.api_keys["openai_api_key"],
-            **self.kwargs.get("analyzer_kwargs", {})
+            self.api_keys["openai_api_key"], **self.kwargs.get("analyzer_kwargs", {})
         )
         firestore_client = self.firestore_client_class(
             self.api_keys["service_account_path"],
-            **self.kwargs.get("firestore_client_kwargs", {})
+            **self.kwargs.get("firestore_client_kwargs", {}),
         )
 
         return NewsProcessor(
@@ -118,7 +115,7 @@ class CustomNewsProcessorFactory(BaseNewsProcessorFactory):
 class MockNewsProcessorFactory(BaseNewsProcessorFactory):
     """Factory for creating NewsProcessors with mock implementations for testing."""
 
-    def create_processor(self) -> 'NewsProcessor':
+    def create_processor(self) -> "NewsProcessor":
         """Create a NewsProcessor with mock implementations.
 
         Returns:
@@ -199,4 +196,4 @@ class NewsProcessor:
             try:
                 self.process_article(article)
             except Exception as e:
-                print(f"Failed to process article: {e}") 
+                print(f"Failed to process article: {e}")

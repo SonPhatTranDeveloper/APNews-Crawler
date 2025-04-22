@@ -42,13 +42,15 @@ class BaseFirebaseClient(ABC):
         Returns:
             str: Response from Firebase.
         """
-        pass 
+        pass
 
 
 class FirestoreClient(BaseFirebaseClient):
     """Firestore implementation of the Firebase client."""
 
-    def __init__(self, service_account_path: str, project_id: str = FIREBASE_PROJECT_ID):
+    def __init__(
+        self, service_account_path: str, project_id: str = FIREBASE_PROJECT_ID
+    ):
         """Initialize the Firestore client.
 
         Args:
@@ -68,7 +70,7 @@ class FirestoreClient(BaseFirebaseClient):
         if not self._access_token:
             credentials = service_account.Credentials.from_service_account_file(
                 self.service_account_path,
-                scopes=["https://www.googleapis.com/auth/datastore"]
+                scopes=["https://www.googleapis.com/auth/datastore"],
             )
             credentials.refresh(Request())
             self._access_token = credentials.token
@@ -154,4 +156,4 @@ class FirestoreClient(BaseFirebaseClient):
         else:
             raise Exception(
                 f"Error inserting document: {response.status_code} - {response.text}"
-            ) 
+            )

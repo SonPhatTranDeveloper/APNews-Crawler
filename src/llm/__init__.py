@@ -13,11 +13,11 @@ def analyze_article_content(
     api_key: str,
 ) -> Dict:
     """Legacy function that uses OpenAIArticleAnalyzer internally.
-    
+
     Args:
         article (FullArticle): The article to analyze.
         api_key (str): OpenAI API key.
-        
+
     Returns:
         Dict: Analysis results including summary, translations, vocabulary, and quiz.
     """

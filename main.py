@@ -29,7 +29,7 @@ def main():
     # Create factory and get processor
     factory = DefaultNewsProcessorFactory(api_keys)
     processor = factory.create_processor()
-    
+
     # Run the processor
     processor.run()
 

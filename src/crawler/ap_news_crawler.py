@@ -19,7 +19,9 @@ class BaseNewsCrawler(ABC):
         """
         pass
 
-    def _create_crawled_news(self, news: PartialArticle, content: list[str]) -> FullArticle:
+    def _create_crawled_news(
+        self, news: PartialArticle, content: list[str]
+    ) -> FullArticle:
         """Helper method to create a FullArticle object.
 
         Args:
@@ -34,9 +36,9 @@ class BaseNewsCrawler(ABC):
                 author=news.author,
                 title=news.title,
                 url=news.url,
-                imageUrl=news.imageUrl
+                imageUrl=news.imageUrl,
             ),
-            content=content
+            content=content,
         )
 
 
@@ -74,4 +76,4 @@ class APNewsCrawler(BaseNewsCrawler):
         # Extract text content
         content = content_div.get_text(strip=True) if content_div else ""
 
-        return self._create_crawled_news(news, [content]) 
+        return self._create_crawled_news(news, [content])

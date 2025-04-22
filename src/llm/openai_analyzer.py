@@ -108,21 +108,21 @@ class OpenAIArticleAnalyzer(BaseArticleAnalyzer):
                         "type": "array",
                         "minItems": 5,
                         "maxItems": 7,
-                        "description": 'Words from the shortened version that are simple and beginner-friendly.',
+                        "description": "Words from the shortened version that are simple and beginner-friendly.",
                         "items": {"$ref": "#/definitions/word"},
                     },
                     "medium_words": {
                         "type": "array",
                         "minItems": 5,
                         "maxItems": 7,
-                        "description": 'Intermediate words from the shortened version.',
+                        "description": "Intermediate words from the shortened version.",
                         "items": {"$ref": "#/definitions/word"},
                     },
                     "hard_words": {
                         "type": "array",
                         "minItems": 5,
                         "maxItems": 7,
-                        "description": 'Advanced or challenging words from the shortened version.',
+                        "description": "Advanced or challenging words from the shortened version.",
                         "items": {"$ref": "#/definitions/word"},
                     },
                     "quiz": {
@@ -291,4 +291,4 @@ class OpenAIArticleAnalyzer(BaseArticleAnalyzer):
             "imageUrl": article.article.imageUrl,
         }
 
-        return analysis_result 
+        return analysis_result
