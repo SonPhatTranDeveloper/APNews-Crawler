@@ -285,6 +285,7 @@ class OpenAIArticleAnalyzer(BaseArticleAnalyzer):
             "title": article.article.title,
             "author": article.article.author,
             "imageUrl": article.article.imageUrl,
+            "timestamp": article.timestamp,
         }
 
         return analysis_result

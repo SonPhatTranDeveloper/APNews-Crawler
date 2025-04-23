@@ -182,7 +182,7 @@ class NewsProcessor:
             document_data=analyzed,
         )
 
-    def run(self, total_articles: int = 5):
+    def run(self, total_articles: int = 10):
         """Run the news processing pipeline.
 
         Args:

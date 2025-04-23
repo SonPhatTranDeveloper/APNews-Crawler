@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 
 @dataclass
@@ -13,3 +14,4 @@ class PartialArticle:
 class FullArticle:
     article: PartialArticle
     content: str
+    timestamp: int = int(datetime.now().timestamp() * 1000)
