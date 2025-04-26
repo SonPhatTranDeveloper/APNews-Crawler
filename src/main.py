@@ -3,7 +3,8 @@ from typing import Dict
 
 from dotenv import load_dotenv
 
-from src.processor import DefaultNewsProcessorFactory
+from constants import VIETNAMESE_NEWS_SOURCE
+from src.processor import VietnameseNewsProcessorFactory
 
 
 def load_api_keys_news_api() -> Dict[str, str]:
@@ -29,8 +30,9 @@ def load_api_keys_news_io_api() -> Dict[str, str]:
     """
     load_dotenv()
     return {
-        "news_io_api_key": os.getenv("NEWS_API_KEY"),
+        "news_io_api_key": os.getenv("NEWS_IO_API_KEY"),
         "openai_api_key": os.getenv("OPENAI_API_KEY"),
+        "scraper_api_key": os.getenv("SCRAPER_API_KEY"),
         "service_account_path": os.getenv("GOOGLE_APPLICATION_CREDENTIALS"),
     }
 
@@ -38,14 +40,14 @@ def load_api_keys_news_io_api() -> Dict[str, str]:
 def main():
     """Main execution flow."""
     # Load API keys
-    api_keys = load_api_keys_news_api()
+    api_keys = load_api_keys_news_io_api()
 
     # Create factory and get processor
-    factory = DefaultNewsProcessorFactory(api_keys)
+    factory = VietnameseNewsProcessorFactory(api_keys)
     processor = factory.create_processor()
 
     # Run the processor
-    processor.run()
+    processor.run(source_id=VIETNAMESE_NEWS_SOURCE)
 
 
 if __name__ == "__main__":

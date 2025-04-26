@@ -1,1 +1,2 @@
 from src.llm.openai_analyzer import OpenAIArticleAnalyzer, BaseArticleAnalyzer
+from src.llm.vietnamese_openai_analyzer import VietnameseOpenAIArticleAnalyzer

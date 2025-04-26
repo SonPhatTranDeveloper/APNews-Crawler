@@ -1,13 +1,16 @@
 import pprint
 from abc import ABC, abstractmethod
-from typing import Dict, Type
+from typing import Dict
 
 from tqdm import tqdm
 
 from constants import FIREBASE_COLLECTION, NEWS_SOURCE
 from src.firebase import BaseFirebaseClient, FirestoreClient
-from src.llm import BaseArticleAnalyzer, OpenAIArticleAnalyzer
-from src.service import BaseNewsService, DefaultNewsService
+from src.llm import (BaseArticleAnalyzer, OpenAIArticleAnalyzer,
+                     VietnameseOpenAIArticleAnalyzer)
+from src.model import FullArticle
+from src.service import (BaseNewsService, DefaultNewsService,
+                         VietnameseNewsService)
 from src.utils import url_to_document_id
 
 
@@ -43,9 +46,32 @@ class DefaultNewsProcessorFactory(BaseNewsProcessorFactory):
         """
         news_service = DefaultNewsService(
             news_api_key=self.api_keys["news_api_key"],
-            scraper_api_key=self.api_keys["scraper_api_key"]
+            scraper_api_key=self.api_keys["scraper_api_key"],
         )
         analyzer = OpenAIArticleAnalyzer(self.api_keys["openai_api_key"])
+        firestore_client = FirestoreClient(self.api_keys["service_account_path"])
+
+        return NewsProcessor(
+            news_service=news_service,
+            analyzer=analyzer,
+            firestore_client=firestore_client,
+        )
+
+
+class VietnameseNewsProcessorFactory(BaseNewsProcessorFactory):
+    """Factory for creating NewsProcessors with Vietnamese-specific implementations."""
+
+    def create_processor(self) -> "NewsProcessor":
+        """Create a NewsProcessor with Vietnamese-specific implementations.
+
+        Returns:
+            NewsProcessor: A processor with Vietnamese implementations.
+        """
+        news_service = VietnameseNewsService(
+            news_io_api_key=self.api_keys["news_io_api_key"],
+            scraper_api_key=self.api_keys["scraper_api_key"],
+        )
+        analyzer = VietnameseOpenAIArticleAnalyzer(self.api_keys["openai_api_key"])
         firestore_client = FirestoreClient(self.api_keys["service_account_path"])
 
         return NewsProcessor(
@@ -75,7 +101,7 @@ class NewsProcessor:
         self.analyzer = analyzer
         self.firestore_client = firestore_client
 
-    def process_article(self, article):
+    def process_article(self, article: FullArticle):
         """Process a single article through the pipeline.
 
         Args:
@@ -95,14 +121,16 @@ class NewsProcessor:
             document_data=analyzed,
         )
 
-    def run(self, total_articles: int = 10):
+    def run(self, source_id: str, total_articles: int = 10):
         """Run the news processing pipeline.
 
         Args:
             total_articles (int): Number of articles to process.
         """
         # Get full articles including content
-        articles = self.news_service.get_full_articles(NEWS_SOURCE, total=total_articles)
+        articles = self.news_service.get_full_articles(
+            source_id, total=total_articles
+        )
 
         # Process each article
         for article in tqdm(articles, desc="Processing articles"):
