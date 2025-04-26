@@ -80,8 +80,12 @@ class OpenAIArticleAnalyzer(BaseArticleAnalyzer):
                         "type": "string",
                         "enum": ["Dễ", "Trung bình", "Thử thách"],
                     },
+                    "translated_title": {
+                        "type": "string",
+                        "description": "The translation of the title of the article in Vietnamese.",
+                    },
                 },
-                "required": ["shortened", "sentences", "category", "difficulty"],
+                "required": ["shortened", "sentences", "category", "difficulty", "translated_title"],
             },
         }
 
@@ -184,7 +188,7 @@ class OpenAIArticleAnalyzer(BaseArticleAnalyzer):
             },
         }
 
-    def _analyze_step1(self, content: str) -> Dict:
+    def _analyze_step1(self, content: str, title: str) -> Dict:
         """Perform step 1 analysis (summary and translation).
 
         Args:
@@ -201,12 +205,13 @@ class OpenAIArticleAnalyzer(BaseArticleAnalyzer):
                     "Return a JSON object with: 'shortened', 'sentences', 'category', and 'difficulty'.\n"
                     "The 'shortened' must be 200-400 words, human-readable, and engaging.\n"
                     "Each sentence in the shortened version must have its English-Vietnamese pair in 'sentences'.\n"
-                    "Also classify the article's category and estimate its difficulty for English learners."
+                    "Also classify the article's category and estimate its difficulty for English learners.\n"
+                    "Also translate the title of the article into Vietnamese."
                 ),
             },
             {
                 "role": "user",
-                "content": f"Summarize and translate this article:\n\n{content}",
+                "content": f"Summarize and translate this article:\n\n{content}, and translate the title: {title}",
             },
         ]
 
@@ -272,7 +277,7 @@ class OpenAIArticleAnalyzer(BaseArticleAnalyzer):
             Dict: Analysis results including summary, translations, vocabulary, and quiz.
         """
         # Step 1: Generate shortened version, category, difficulty, and translations
-        step1_data = self._analyze_step1(article.content[0])
+        step1_data = self._analyze_step1(article.content[0], article.article.title)
 
         # Step 2: Extract vocabulary and generate quiz
         step2_data = self._analyze_step2(step1_data["shortened"])
