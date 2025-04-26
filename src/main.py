@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from src.processor import DefaultNewsProcessorFactory
 
 
-def load_api_keys() -> Dict[str, str]:
+def load_api_keys_news_api() -> Dict[str, str]:
     """Load environment variables and return necessary API keys and credentials.
 
     Returns:
@@ -21,10 +21,24 @@ def load_api_keys() -> Dict[str, str]:
     }
 
 
+def load_api_keys_news_io_api() -> Dict[str, str]:
+    """Load environment variables and return necessary API keys and credentials.
+
+    Returns:
+        Dict[str, str]: Dictionary containing all required API keys.
+    """
+    load_dotenv()
+    return {
+        "news_io_api_key": os.getenv("NEWS_API_KEY"),
+        "openai_api_key": os.getenv("OPENAI_API_KEY"),
+        "service_account_path": os.getenv("GOOGLE_APPLICATION_CREDENTIALS"),
+    }
+
+
 def main():
     """Main execution flow."""
     # Load API keys
-    api_keys = load_api_keys()
+    api_keys = load_api_keys_news_api()
 
     # Create factory and get processor
     factory = DefaultNewsProcessorFactory(api_keys)
