@@ -3,8 +3,8 @@ from typing import Dict
 
 from dotenv import load_dotenv
 
-from constants import VIETNAMESE_NEWS_SOURCE
-from src.processor import VietnameseNewsProcessorFactory
+from constants import VIETNAMESE_NEWS_SOURCE, NEWS_SOURCE
+from src.processor import VietnameseNewsProcessorFactory, DefaultNewsProcessorFactory
 
 
 def load_api_keys_news_api() -> Dict[str, str]:
@@ -40,14 +40,14 @@ def load_api_keys_news_io_api() -> Dict[str, str]:
 def main():
     """Main execution flow."""
     # Load API keys
-    api_keys = load_api_keys_news_io_api()
+    api_keys = load_api_keys_news_api()
 
     # Create factory and get processor
-    factory = VietnameseNewsProcessorFactory(api_keys)
+    factory = DefaultNewsProcessorFactory(api_keys)
     processor = factory.create_processor()
 
     # Run the processor
-    processor.run(source_id=VIETNAMESE_NEWS_SOURCE)
+    processor.run(source_id=NEWS_SOURCE)
 
 
 if __name__ == "__main__":

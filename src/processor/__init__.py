@@ -1,11 +1,13 @@
 import pprint
+import random
 from abc import ABC, abstractmethod
-from typing import Dict
+from typing import Dict, List
 
 from tqdm import tqdm
 
 from constants import FIREBASE_COLLECTION, NEWS_SOURCE
 from src.firebase import BaseFirebaseClient, FirestoreClient
+from src.firebase.fcm_client import FCMClient
 from src.llm import (BaseArticleAnalyzer, OpenAIArticleAnalyzer,
                      VietnameseOpenAIArticleAnalyzer)
 from src.model import FullArticle
@@ -50,11 +52,13 @@ class DefaultNewsProcessorFactory(BaseNewsProcessorFactory):
         )
         analyzer = OpenAIArticleAnalyzer(self.api_keys["openai_api_key"])
         firestore_client = FirestoreClient(self.api_keys["service_account_path"])
+        fcm_client = FCMClient(self.api_keys["service_account_path"])
 
         return NewsProcessor(
             news_service=news_service,
             analyzer=analyzer,
             firestore_client=firestore_client,
+            fcm_client=fcm_client,
         )
 
 
@@ -73,11 +77,13 @@ class VietnameseNewsProcessorFactory(BaseNewsProcessorFactory):
         )
         analyzer = VietnameseOpenAIArticleAnalyzer(self.api_keys["openai_api_key"])
         firestore_client = FirestoreClient(self.api_keys["service_account_path"])
+        fcm_client = FCMClient(self.api_keys["service_account_path"])
 
         return NewsProcessor(
             news_service=news_service,
             analyzer=analyzer,
             firestore_client=firestore_client,
+            fcm_client=fcm_client,
         )
 
 
@@ -89,6 +95,7 @@ class NewsProcessor:
         news_service: BaseNewsService,
         analyzer: BaseArticleAnalyzer,
         firestore_client: BaseFirebaseClient,
+        fcm_client: FCMClient,
     ):
         """Initialize the news processor with its components.
 
@@ -96,16 +103,21 @@ class NewsProcessor:
             news_service (BaseNewsService): Service for fetching and crawling articles
             analyzer (BaseArticleAnalyzer): Analyzer for processing article content
             firestore_client (BaseFirebaseClient): Client for storing processed articles
+            fcm_client (FCMClient): Client for sending push notifications
         """
         self.news_service = news_service
         self.analyzer = analyzer
         self.firestore_client = firestore_client
+        self.fcm_client = fcm_client
 
-    def process_article(self, article: FullArticle):
+    def process_article(self, article: FullArticle) -> Dict:
         """Process a single article through the pipeline.
 
         Args:
             article: The article to process.
+
+        Returns:
+            Dict: The analyzed article data.
         """
         # Analyze the article content
         analyzed = self.analyzer.analyze_article(article)
@@ -121,6 +133,8 @@ class NewsProcessor:
             document_data=analyzed,
         )
 
+        return analyzed
+
     def run(self, source_id: str, total_articles: int = 10):
         """Run the news processing pipeline.
 
@@ -132,9 +146,31 @@ class NewsProcessor:
             source_id, total=total_articles
         )
 
-        # Process each article
+        # Process each article and store analyzed results
+        processed_articles = []
         for article in tqdm(articles, desc="Processing articles"):
             try:
-                self.process_article(article)
+                analyzed = self.process_article(article)
+                processed_articles.append(analyzed)
             except Exception as e:
                 print(f"Failed to process article: {e}")
+
+        # If we have processed articles, announce a random one
+        if processed_articles:
+            try:
+                # Choose a random article
+                random_article = random.choice(processed_articles)
+                
+                # Send push notification for the random article
+                self.fcm_client.send_to_topic(
+                    topic="news_updates",
+                    title="Tin nóng hổi",
+                    body=random_article["title"],
+                    data={
+                        "url": random_article["url"],
+                        "articleId": url_to_document_id(random_article["url"]),
+                        "isFeatured": "true"
+                    }
+                )
+            except Exception as e:
+                print(f"Failed to send featured article notification: {e}")
