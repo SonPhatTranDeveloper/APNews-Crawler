@@ -164,7 +164,7 @@ class NewsProcessor:
                 # Send push notification for the random article
                 self.fcm_client.send_to_topic(
                     topic="news_channel",
-                    title="Tin tiếng anh nóng hổi",
+                    title="Ụm bò... Tin tiếng anh nóng hổi",
                     body=latest_article["title"]
                 )
             except Exception as e:

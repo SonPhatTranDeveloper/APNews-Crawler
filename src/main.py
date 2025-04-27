@@ -40,14 +40,14 @@ def load_api_keys_news_io_api() -> Dict[str, str]:
 def main():
     """Main execution flow."""
     # Load API keys
-    api_keys = load_api_keys_news_api()
+    api_keys = load_api_keys_news_io_api()
 
     # Create factory and get processor
-    factory = DefaultNewsProcessorFactory(api_keys)
+    factory = VietnameseNewsProcessorFactory(api_keys)
     processor = factory.create_processor()
 
     # Run the processor
-    processor.run(source_id=NEWS_SOURCE, total_articles=10)
+    processor.run(source_id=VIETNAMESE_NEWS_SOURCE, total_articles=1)
 
 
 if __name__ == "__main__":
