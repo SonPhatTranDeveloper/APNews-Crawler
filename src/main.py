@@ -47,7 +47,7 @@ def main():
     processor = factory.create_processor()
 
     # Run the processor
-    processor.run(source_id=VIETNAMESE_NEWS_SOURCE, total_articles=1)
+    processor.run(source_id=VIETNAMESE_NEWS_SOURCE, total_articles=10)
 
 
 if __name__ == "__main__":
