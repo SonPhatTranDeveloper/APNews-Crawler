@@ -158,19 +158,14 @@ class NewsProcessor:
         # If we have processed articles, announce a random one
         if processed_articles:
             try:
-                # Choose a random article
-                random_article = random.choice(processed_articles)
+                # Choose the latest article
+                latest_article = processed_articles[-1]
                 
                 # Send push notification for the random article
                 self.fcm_client.send_to_topic(
-                    topic="news_updates",
-                    title="Tin nóng hổi",
-                    body=random_article["title"],
-                    data={
-                        "url": random_article["url"],
-                        "articleId": url_to_document_id(random_article["url"]),
-                        "isFeatured": "true"
-                    }
+                    topic="news_channel",
+                    title="Tin tiếng anh nóng hổi",
+                    body=latest_article["title"]
                 )
             except Exception as e:
                 print(f"Failed to send featured article notification: {e}")
