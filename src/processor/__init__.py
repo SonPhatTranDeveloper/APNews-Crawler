@@ -8,11 +8,13 @@ from tqdm import tqdm
 from constants import FIREBASE_COLLECTION, NEWS_SOURCE
 from src.firebase import BaseFirebaseClient, FirestoreClient
 from src.firebase.fcm_client import FCMClient
-from src.llm import (BaseArticleAnalyzer, OpenAIArticleAnalyzer,
-                     VietnameseOpenAIArticleAnalyzer)
+from src.llm import (
+    BaseArticleAnalyzer,
+    OpenAIArticleAnalyzer,
+    VietnameseOpenAIArticleAnalyzer,
+)
 from src.model import FullArticle
-from src.service import (BaseNewsService, DefaultNewsService,
-                         VietnameseNewsService)
+from src.service import BaseNewsService, DefaultNewsService, VietnameseNewsService
 from src.utils import url_to_document_id
 
 
@@ -142,9 +144,7 @@ class NewsProcessor:
             total_articles (int): Number of articles to process.
         """
         # Get full articles including content
-        articles = self.news_service.get_full_articles(
-            source_id, total=total_articles
-        )
+        articles = self.news_service.get_full_articles(source_id, total=total_articles)
 
         # Process each article and store analyzed results
         processed_articles = []
@@ -160,12 +160,12 @@ class NewsProcessor:
             try:
                 # Choose the latest article
                 latest_article = processed_articles[-1]
-                
+
                 # Send push notification for the random article
                 self.fcm_client.send_to_topic(
                     topic="news_channel",
                     title="Ụm bò... Tin tiếng anh nóng hổi",
-                    body=latest_article["title"]
+                    body=latest_article["title"],
                 )
             except Exception as e:
                 print(f"Failed to send featured article notification: {e}")

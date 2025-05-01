@@ -13,7 +13,9 @@ from constants import FIREBASE_PROJECT_ID
 class FCMClient:
     """Firebase Cloud Messaging client for sending notifications."""
 
-    def __init__(self, service_account_path: str, project_id: str = FIREBASE_PROJECT_ID):
+    def __init__(
+        self, service_account_path: str, project_id: str = FIREBASE_PROJECT_ID
+    ):
         """Initialize the FCM client.
 
         Args:
@@ -61,7 +63,7 @@ class FCMClient:
             Exception: If the notification fails to send.
         """
         url = f"https://fcm.googleapis.com/v1/projects/{self.project_id}/messages:send"
-        
+
         headers = {
             "Authorization": f"Bearer {self.get_access_token()}",
             "Content-Type": "application/json",
@@ -77,29 +79,17 @@ class FCMClient:
                 "android": {
                     "notification": {
                         "click_action": "FLUTTER_NOTIFICATION_CLICK",
-                        "sound": "default"
+                        "sound": "default",
                     }
                 },
-                "apns": {
-                    "payload": {
-                        "aps": {
-                            "sound": "default"
-                        }
-                    }
-                }
+                "apns": {"payload": {"aps": {"sound": "default"}}},
             }
         }
 
         if data:
-            message["message"]["data"] = {
-                str(k): str(v) for k, v in data.items()
-            }
+            message["message"]["data"] = {str(k): str(v) for k, v in data.items()}
 
-        response = requests.post(
-            url,
-            headers=headers,
-            data=json.dumps(message)
-        )
+        response = requests.post(url, headers=headers, data=json.dumps(message))
 
         if response.ok:
             return response.json()
@@ -130,7 +120,7 @@ class FCMClient:
             Exception: If the notification fails to send.
         """
         url = f"https://fcm.googleapis.com/v1/projects/{self.project_id}/messages:send"
-        
+
         headers = {
             "Authorization": f"Bearer {self.get_access_token()}",
             "Content-Type": "application/json",
@@ -148,40 +138,32 @@ class FCMClient:
                     "android": {
                         "notification": {
                             "click_action": "FLUTTER_NOTIFICATION_CLICK",
-                            "sound": "default"
+                            "sound": "default",
                         }
                     },
-                    "apns": {
-                        "payload": {
-                            "aps": {
-                                "sound": "default"
-                            }
-                        }
-                    }
+                    "apns": {"payload": {"aps": {"sound": "default"}}},
                 }
             }
 
             if data:
-                message["message"]["data"] = {
-                    str(k): str(v) for k, v in data.items()
-                }
+                message["message"]["data"] = {str(k): str(v) for k, v in data.items()}
 
-            response = requests.post(
-                url,
-                headers=headers,
-                data=json.dumps(message)
-            )
-            
+            response = requests.post(url, headers=headers, data=json.dumps(message))
+
             if response.ok:
                 responses.append(response.json())
             else:
                 print(f"Failed to send to token {token}: {response.text}")
 
-        return {"responses": responses} 
-    
+        return {"responses": responses}
+
 
 if __name__ == "__main__":
     # Test run the FCM client
-    load_dotenv()   
-    fcm_client = FCMClient(service_account_path=os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
-    fcm_client.send_to_topic("news_channel", "Test Notification", "This is a test notification")
+    load_dotenv()
+    fcm_client = FCMClient(
+        service_account_path=os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    )
+    fcm_client.send_to_topic(
+        "news_channel", "Test Notification", "This is a test notification"
+    )
