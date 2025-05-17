@@ -64,5 +64,5 @@ def load_international_news():
 
 
 if __name__ == "__main__":
-    load_international_news()
     load_vietnamese_news()
+    load_international_news()
